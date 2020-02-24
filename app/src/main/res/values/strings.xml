@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">RListTry</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="name_of_list">Назаваите список</string>
+    <string name="create_list">Создать список</string>
+    <string name="title_activity_list_detail">ListDetailActivity</string>
+
+    <!--   ListDetailActivity-->
+    <string name="task_to_add">Какаую задачу ты хочешь добавить?</string>
+    <string name="add_task">Добавить</string>
+
+</resources>
