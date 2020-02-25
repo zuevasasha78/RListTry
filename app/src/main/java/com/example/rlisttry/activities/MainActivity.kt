@@ -1,76 +1,53 @@
 package com.example.rlisttry.activities
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.EditText
+import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.rlisttry.ListDataManager
-import com.example.rlisttry.adapter.ListSelectionRecyclerViewAdapter
+import com.example.rlisttry.ListSelectionFragment
 import com.example.rlisttry.R
 import com.example.rlisttry.TaskList
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(),
-    ListSelectionRecyclerViewAdapter.ListSelectionRecyclerViewClickListener {
+    ListSelectionFragment.OnListItemFragmentInteractionListener {
 
-    lateinit var listRecyclerView: RecyclerView
-    private val listDataManager = ListDataManager(this)
+
+    private var fragmentContainer: FrameLayout? = null
+    private val listSelectionFragment: ListSelectionFragment =
+        ListSelectionFragment.newInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        fragmentContainer = findViewById(R.id.fragment_container)
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, listSelectionFragment)
+            .commit()
+
         fab.setOnClickListener {
             showCreateListDiolog()
         }
-
-        val lists = listDataManager.readLis()
-        listRecyclerView = findViewById(R.id.lists_recyclerview)
-        listRecyclerView.layoutManager = LinearLayoutManager(this)
-        listRecyclerView.adapter =
-            ListSelectionRecyclerViewAdapter(
-                lists,
-                this
-            )
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun listItemClicked(list: TaskList) {
-        showListDetail(list)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(requestCode == LIST_DETAIL_REQUEST_CODE && resultCode == Activity.RESULT_OK){
-            data?.let{
-                listDataManager.saveList(data.getParcelableExtra(INTENT_LIST_KEY))
-                updateLists()
+        if (requestCode == LIST_DETAIL_REQUEST_CODE) {
+            data?.let {
+                listSelectionFragment.saveList(data.getParcelableExtra(INTENT_LIST_KEY))
             }
         }
+    }
+
+    override fun onListItemClick(list: TaskList) {
+        showListDetail(list)
     }
 
     fun showCreateListDiolog() {
@@ -86,11 +63,7 @@ class MainActivity : AppCompatActivity(),
 
         builder.setPositiveButton(positiveButtonTitle) { dialog, _ ->
             val list = TaskList(listTitleEditText.text.toString())
-            listDataManager.saveList(list)
-
-            val recyclerAdapter = listRecyclerView.adapter as
-                    ListSelectionRecyclerViewAdapter
-            recyclerAdapter.addList(list)
+            listSelectionFragment.addList(list)
             dialog.dismiss()
             showListDetail(list)
         }
@@ -101,11 +74,6 @@ class MainActivity : AppCompatActivity(),
         val listDetailIntent = Intent(this, ListDetailActivity::class.java)
         listDetailIntent.putExtra(INTENT_LIST_KEY, list)
         startActivityForResult(listDetailIntent, LIST_DETAIL_REQUEST_CODE)
-    }
-
-    private fun updateLists(){
-        val lists= listDataManager.readLis()
-        listRecyclerView.adapter = ListSelectionRecyclerViewAdapter(lists, this)
     }
 
     companion object {

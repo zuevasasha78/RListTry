@@ -8,4 +8,11 @@
     tools:context=".activities.ListDetailActivity"
     tools:showIn="@layout/activity_list_detail">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_items_reyclerview"
+        android:layout_width="409dp"
+        android:layout_height="673dp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
