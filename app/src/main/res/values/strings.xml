@@ -10,4 +10,6 @@
     <string name="task_to_add">Какаую задачу ты хочешь добавить?</string>
     <string name="add_task">Добавить</string>
 
+    <string name="list_fragment_tag">List Fragment</string>
+
 </resources>
